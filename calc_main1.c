@@ -4,22 +4,29 @@
 #include "calc.h"
 
 int main(int argc, char **argv){
-	unsigned char format_code=2	, res, elem, memory_on = 1;
+	unsigned char format_code=2	, res, elem, memory_on;
 	char buffer[256], *operation, operand[4][9], op1[9], op2[9];
 	char test = 0;
 	node *mem = alloc_mem();
 	node *ptr_mem = mem;
 	char delimerters[] = {'\n',EOF,' '};
 
-	//printf("%s\n", "Bienvenido a la calculadora binaria!\nElija la base en cual va a trabajar:\n(2-binario, 16-hexadeciamal, 10-decimal)\n");
-	//scanf("%u", &format_code);
-	//printf("%s : %u\n", "El formato eligido es ", format_code);
-	//printf("Habilitar el uso de la memoria? (1-si, 0-no)\n");
-	//scanf("%u", &memory_on);
+	printf("%s\n", "Bienvenido a la calculadora binaria!\nElija la base en cual va a trabajar:\n(2-binario, 16-hexadeciamal, 10-decimal)\n");
+	scanf("%u", &format_code);
+	printf("%s : %u\n", "El formato eligido es ", format_code);
+	printf("Habilitar el uso de la memoria? (1-si, 0-no)\n");
+	scanf("%u", &memory_on);
+
+	strcpy(ptr_mem -> contenido.operacion, "base");
+	ptr_mem -> siguiente = alloc_mem();
+	ptr_mem = ptr_mem -> siguiente;
+	ptr_mem -> contenido.dato = format_code;
+	ptr_mem -> siguiente = alloc_mem();
+	ptr_mem = ptr_mem -> siguiente;
 
 	//printf("Hex %02x\n", 255);
 	do {
-		printf("Introduce la operacion en forma [operacion operando1 operando2] :  ");
+		printf("\nIntroduce la operacion en forma [operacion operando1 operando2] :  \n");
 		fflush(stdout);
 		/* get string */
 		if(fgets(buffer, sizeof(buffer), stdin) == NULL){
@@ -38,7 +45,7 @@ int main(int argc, char **argv){
 			printf("%s\n", "It is OR");
 			if(format_code == 10){
 				res = or_log(atoi(operand[1]), atoi(operand[2]));
-				sprintf(operand[3], "%u", res);
+				//sprintf(operand[3], "%u", res);
 			} else {
 				printf("Before calling format b = %u\n", format_code);
 				strcpy(op1, format_change(operand[1], format_code, 10));
@@ -53,7 +60,7 @@ int main(int argc, char **argv){
 			printf("%s\n", "It is AND");
 			if(format_code == 10){
 				res = and_log(atoi(operand[1]), atoi(operand[2]));
-				sprintf(operand[3], "%u", res);
+				//sprintf(operand[3], "%u", res);
 			} else {
 				strcpy(op1, format_change(operand[1], format_code, 10));
 				strcpy(op2, format_change(operand[2], format_code, 10));
@@ -67,7 +74,7 @@ int main(int argc, char **argv){
 			printf("%s\n", "It is XOR");
 			if(format_code == 10){
 				res = xor_log(atoi(operand[1]), atoi(operand[2]));
-				sprintf(operand[3], "%u", res);
+				//sprintf(operand[3], "%u", res);
 			} else {
 				strcpy(op1, format_change(operand[1], format_code, 10));
 				strcpy(op2, format_change(operand[2], format_code, 10));
@@ -80,7 +87,7 @@ int main(int argc, char **argv){
 		} else if(!strcmp(operand[0],">>")){
 			if(format_code == 10){
 				res = shr_log(atoi(operand[1]), atoi(operand[2]));
-				sprintf(operand[3], "%u", res);
+				//sprintf(operand[3], "%u", res);
 			} else {
 				strcpy(op1, format_change(operand[1], format_code, 10));
 				strcpy(op2, format_change(operand[2], format_code, 10));
@@ -93,7 +100,7 @@ int main(int argc, char **argv){
 		} else if(!strcmp(operand[0],"<<")){
 			if(format_code == 10){
 				res = shl_log(atoi(operand[1]), atoi(operand[2]));
-				sprintf(operand[3], "%u", res);
+				//sprintf(operand[3], "%u", res);
 			} else {
 				strcpy(op1, format_change(operand[1], format_code, 10));
 				strcpy(op2, format_change(operand[2], format_code, 10));
@@ -121,12 +128,50 @@ int main(int argc, char **argv){
 			}
 		} else if(!strcmp(operand[0],"show\n")){
 			printf("Mostrar la memoria.\n");
-			show_mem(mem);
+			show_mem(&mem);
 		}
 		fflush(stdout);
 		/* memory management */
-		if(memory_on & strcmp(operand[0],"show")){
-			fill_mem(operand[0], operand[1], operand[2], operand[3], ptr_mem, format_code);
+		if(memory_on && strcmp(operand[0],"show\n")){
+			if(format_code == 10){
+				char unsigned op1 = atoi(operand[1]);
+				char unsigned op2 = atoi(operand[2]);
+				fill_mem(operand[0], &op1, &op2, &res, &ptr_mem, format_code);
+			}
+			else
+				fill_mem(operand[0], operand[1], operand[2], operand[3], &ptr_mem, format_code);
+			/*
+			strcpy(ptr_mem -> contenido.operacion, operand[1]);
+			printf("Se ha guardado 0 %s mem %d ptr %d\n", ptr_mem -> contenido.operacion, mem, ptr_mem);
+
+			ptr_mem -> siguiente = alloc_mem();
+			ptr_mem = ptr_mem -> siguiente;
+			strcpy(ptr_mem -> contenido.operacion, operand[0]);
+			printf("Se ha guardado 1 %s mem %d ptr %d\n", ptr_mem -> contenido.operacion, mem, ptr_mem);
+			ptr_mem -> siguiente = alloc_mem();
+
+			ptr_mem = ptr_mem -> siguiente;
+			strcpy(ptr_mem -> contenido.operacion, operand[2]);
+			printf("Se ha guardado 2 %s mem %d ptr %d\n", ptr_mem -> contenido.operacion, mem, ptr_mem);
+			ptr_mem -> siguiente = alloc_mem();
+
+			ptr_mem = ptr_mem -> siguiente;
+			strcpy(ptr_mem -> contenido.operacion, "=>");
+			printf("Se ha guardado 3 %s mem %d ptr %d\n", ptr_mem -> contenido.operacion, mem, ptr_mem);
+			ptr_mem -> siguiente = alloc_mem();
+
+			ptr_mem = ptr_mem -> siguiente;
+			strcpy(ptr_mem -> contenido.operacion, operand[3]);
+			printf("Se ha guardado 4 %s mem %d ptr %d\n", ptr_mem -> contenido.operacion, mem, ptr_mem);
+			ptr_mem -> siguiente = alloc_mem();
+
+			ptr_mem = ptr_mem -> siguiente;
+			strcpy(ptr_mem -> contenido.operacion, "|~|");
+			printf("Se ha guardado 5 %s mem %d ptr %d\n", ptr_mem -> contenido.operacion, mem, ptr_mem);
+			ptr_mem -> siguiente = alloc_mem();
+
+			ptr_mem = ptr_mem -> siguiente;
+			*/
 			printf("Se ha guardado la opercaion\n");
 		}
 		fflush(stdout);

@@ -29,7 +29,9 @@ char shr_log(char op, char num){
 /* Cambio de formato (2 binario, 16 hexadecimal, 10 decimal). */
 char * format_change(char* num, char from_base, char to_base){
 	printf("Come in %s\n", num);
-	char res[8] = "", cnt = 0, rem;// aux = 0;
+	char *res = (char *)malloc(sizeof(char)*10);
+	strcpy(res, "");
+	char cnt = 0, rem;// aux = 0;
 	unsigned aux = 0;
 	unsigned char var;
 
@@ -99,32 +101,69 @@ char * format_change(char* num, char from_base, char to_base){
 	return res;
 }
 
-void fill_mem(char *opt, char *op1, char *op2, void *res, node *mem, char format_code){
+void fill_mem(char *opt, char *op1, char *op2, char *res, node **memoria, char format_code){
 	printf("FILLMEM IN\n");
-	strcpy(mem -> contenido.operacion, op1);
+	node *mem = *memoria;
+	if(!strcmp(opt, "base")){
+		strcpy(mem -> contenido.operacion, opt);
+		mem -> siguiente = alloc_mem();
+		mem = mem -> siguiente;
+		mem -> contenido.dato = *res;
+		mem -> siguiente = alloc_mem();
+		mem = mem -> siguiente;
+	} else {
+		if(format_code == 10){
+			mem -> contenido.dato = *op1;
 
-	mem -> siguiente = alloc_mem();
-	mem = mem -> siguiente;
-	strcpy(mem -> contenido.operacion, opt);
-	mem -> siguiente = alloc_mem();
+			mem -> siguiente = alloc_mem();
+			mem = mem -> siguiente;
+			strcpy(mem -> contenido.operacion, opt);
+			mem -> siguiente = alloc_mem();
 
-	mem = mem -> siguiente;
-	strcpy(mem -> contenido.operacion, op2);
-	mem -> siguiente = alloc_mem();
+			mem = mem -> siguiente;
+			mem -> contenido.dato = *op2;
+			mem -> siguiente = alloc_mem();
 
-	mem = mem -> siguiente;
-	strcpy(mem -> contenido.operacion, "=>");
-	mem -> siguiente = alloc_mem();
+			mem = mem -> siguiente;
+			strcpy(mem -> contenido.operacion, "=>");
+			mem -> siguiente = alloc_mem();
 
-	mem = mem -> siguiente;
-	strcpy(mem -> contenido.operacion, res);
-	mem -> siguiente = alloc_mem();
+			mem = mem -> siguiente;
+			mem -> contenido.dato = *res;
+			mem -> siguiente = alloc_mem();
 
-	mem = mem -> siguiente;
-	strcpy(mem -> contenido.operacion, "|~|");
-	mem -> siguiente = alloc_mem();
+			mem = mem -> siguiente;
+			strcpy(mem -> contenido.operacion, "|~|");
+			mem -> siguiente = alloc_mem();
 
-	mem = mem -> siguiente;
+			mem = mem -> siguiente;
+		} else {
+			strcpy(mem -> contenido.operacion, op1);
+
+			mem -> siguiente = alloc_mem();
+			mem = mem -> siguiente;
+			strcpy(mem -> contenido.operacion, opt);
+			mem -> siguiente = alloc_mem();
+
+			mem = mem -> siguiente;
+			strcpy(mem -> contenido.operacion, op2);
+			mem -> siguiente = alloc_mem();
+
+			mem = mem -> siguiente;
+			strcpy(mem -> contenido.operacion, "=>");
+			mem -> siguiente = alloc_mem();
+
+			mem = mem -> siguiente;
+			strcpy(mem -> contenido.operacion, res);
+			mem -> siguiente = alloc_mem();
+
+			mem = mem -> siguiente;
+			strcpy(mem -> contenido.operacion, "|~|");
+			mem -> siguiente = alloc_mem();
+
+			mem = mem -> siguiente;
+		}
+	}
 }
 
 node * alloc_mem(){
@@ -143,11 +182,21 @@ void delete_mem(node *n){
 	}
 }
 
-void show_mem(node *n){
-	node *ptr = n;
+void show_mem(node **n){
+	node *ptr = *n;
+	char base;
+	printf("Contenido de la memoria: \n|~| ");
 	while(ptr != NULL){
-		//printf("SHOWMEM IN\n");
-		printf("%s ", ptr -> contenido);
+		if(!strcmp(ptr -> contenido.operacion, "base")){
+			base = (ptr -> siguiente) -> contenido.dato;
+			printf("%s %d ", ptr -> contenido.operacion, base);
+			ptr = (ptr -> siguiente) -> siguiente;
+		} else if (!strcmp(ptr -> contenido.operacion, "memory")){
+
+		} else {
+
+		}
+		printf("%s ", ptr -> contenido.operacion);
 		ptr = ptr -> siguiente;
 	}
 }

@@ -33,7 +33,7 @@ char shr_log(char op, char num);
 char * format_change(char *num, char from_base, char to_base);
 
 /* Llenar un trozo de memoria con una operacion */
-void fill_mem(char *opt, char *op1, char *op2, void *res, node *mem, char format_code);
+void fill_mem(char *opt, char *op1, char *op2, char *res, node **memoria, char format_code);
 
 /* Alocar la memoria para un nodo */
 node * alloc_mem();
@@ -45,9 +45,6 @@ void dealloc_mem(node *n);
 void delete_mem(node *n);
 
 /* Mostrar el contenido de la memoria */
-void show_mem(node *n);
-
-/* Hacer un calculo */
-void* compute(char *opt, char *op1, char* op2, char format);
+void show_mem(node **n);
 
 #endif
