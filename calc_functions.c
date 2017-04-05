@@ -28,14 +28,14 @@ char shr_log(char op, char num){
 
 /* Cambio de formato (2 binario, 16 hexadecimal, 10 decimal). */
 char * format_change(char* num, char from_base, char to_base){
-	printf("Come in %s\n", num);
+	//printf("Come in %s\n", num);
 	char *res = (char *)malloc(sizeof(char)*10);
 	strcpy(res, "");
 	char cnt = 0, rem;// aux = 0;
 	unsigned aux = 0;
 	unsigned char var;
 
-	printf("from b = %u\n", from_base);
+	//printf("from b = %u\n", from_base);
 	if(from_base == 10){
 		var = atoi(num);
 		cnt = log(var)/log(to_base); /* needed to get not inversed version of a binary number (eg 100 instead of 001)*/
@@ -97,7 +97,7 @@ char * format_change(char* num, char from_base, char to_base){
 		}
 	} else 
 		perror("Wrong format base.");
-		printf("Come out %s\n", res);
+		//printf("Come out %s\n", res);
 	return res;
 }
 
@@ -108,9 +108,10 @@ void fill_mem(char *opt, char *op1, char *op2, char *res, node **memoria, char f
 		strcpy(mem -> contenido.operacion, opt);
 		mem -> siguiente = alloc_mem();
 		mem = mem -> siguiente;
-		mem -> contenido.dato = *res;
+		mem -> contenido.dato = format_code;
 		mem -> siguiente = alloc_mem();
 		mem = mem -> siguiente;
+		*memoria = mem;
 	} else {
 		if(format_code == 10){
 			mem -> contenido.dato = *op1;
@@ -124,17 +125,17 @@ void fill_mem(char *opt, char *op1, char *op2, char *res, node **memoria, char f
 			mem -> contenido.dato = *op2;
 			mem -> siguiente = alloc_mem();
 
-			mem = mem -> siguiente;
-			strcpy(mem -> contenido.operacion, "=>");
-			mem -> siguiente = alloc_mem();
+			//mem = mem -> siguiente;
+			//strcpy(mem -> contenido.operacion, "=>");
+			//mem -> siguiente = alloc_mem();
 
 			mem = mem -> siguiente;
 			mem -> contenido.dato = *res;
 			mem -> siguiente = alloc_mem();
 
-			mem = mem -> siguiente;
-			strcpy(mem -> contenido.operacion, "|~|");
-			mem -> siguiente = alloc_mem();
+			//mem = mem -> siguiente;
+			//strcpy(mem -> contenido.operacion, "|~|");
+			//mem -> siguiente = alloc_mem();
 
 			mem = mem -> siguiente;
 		} else {
@@ -149,19 +150,20 @@ void fill_mem(char *opt, char *op1, char *op2, char *res, node **memoria, char f
 			strcpy(mem -> contenido.operacion, op2);
 			mem -> siguiente = alloc_mem();
 
-			mem = mem -> siguiente;
-			strcpy(mem -> contenido.operacion, "=>");
-			mem -> siguiente = alloc_mem();
+			//mem = mem -> siguiente;
+			//strcpy(mem -> contenido.operacion, "=>");
+			//mem -> siguiente = alloc_mem();
 
 			mem = mem -> siguiente;
 			strcpy(mem -> contenido.operacion, res);
 			mem -> siguiente = alloc_mem();
 
-			mem = mem -> siguiente;
-			strcpy(mem -> contenido.operacion, "|~|");
-			mem -> siguiente = alloc_mem();
+			//mem = mem -> siguiente;
+			//strcpy(mem -> contenido.operacion, "|~|");
+			//mem -> siguiente = alloc_mem();
 
 			mem = mem -> siguiente;
+			*memoria = mem;
 		}
 	}
 }
@@ -185,18 +187,23 @@ void delete_mem(node *n){
 void show_mem(node **n){
 	node *ptr = *n;
 	char base;
-	printf("Contenido de la memoria: \n|~| ");
-	while(ptr != NULL){
+	printf("Contenido de la memoria: |~| ");
+	while(ptr -> siguiente != NULL){
 		if(!strcmp(ptr -> contenido.operacion, "base")){
 			base = (ptr -> siguiente) -> contenido.dato;
-			printf("%s %d ", ptr -> contenido.operacion, base);
+			printf("%s %u \n|~| ", ptr -> contenido.operacion, base);
 			ptr = (ptr -> siguiente) -> siguiente;
-		} else if (!strcmp(ptr -> contenido.operacion, "memory")){
-
 		} else {
-
+			if(base == 10){
+				printf("%u %s %u => %u |~| ", (ptr -> siguiente) -> contenido.dato, 
+					ptr -> contenido.operacion, ((ptr -> siguiente) -> siguiente) -> contenido.dato,
+					(((ptr -> siguiente) -> siguiente) -> siguiente) -> contenido.dato);
+			} else {
+				printf("%s %s %s => %s |~| ", (ptr -> siguiente) -> contenido.operacion, 
+					ptr -> contenido.operacion, ((ptr -> siguiente) -> siguiente) -> contenido.operacion,
+					(((ptr -> siguiente) -> siguiente) -> siguiente) -> contenido.operacion);
+			}
+			ptr = (((ptr -> siguiente) -> siguiente) -> siguiente) -> siguiente;
 		}
-		printf("%s ", ptr -> contenido.operacion);
-		ptr = ptr -> siguiente;
 	}
 }

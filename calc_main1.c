@@ -4,18 +4,21 @@
 #include "calc.h"
 
 int main(int argc, char **argv){
-	unsigned char format_code=2	, res, elem, memory_on;
+	unsigned char format_code=2	, res, elem, memory_on = 1;
 	char buffer[256], *operation, operand[4][9], op1[9], op2[9];
-	char test = 0;
+	char on;
 	node *mem = alloc_mem();
 	node *ptr_mem = mem;
 	char delimerters[] = {'\n',EOF,' '};
 
 	printf("%s\n", "Bienvenido a la calculadora binaria!\nElija la base en cual va a trabajar:\n(2-binario, 16-hexadeciamal, 10-decimal)\n");
+	
 	scanf("%u", &format_code);
 	printf("%s : %u\n", "El formato eligido es ", format_code);
 	printf("Habilitar el uso de la memoria? (1-si, 0-no)\n");
+
 	scanf("%u", &memory_on);
+
 
 	strcpy(ptr_mem -> contenido.operacion, "base");
 	ptr_mem -> siguiente = alloc_mem();
@@ -24,10 +27,13 @@ int main(int argc, char **argv){
 	ptr_mem -> siguiente = alloc_mem();
 	ptr_mem = ptr_mem -> siguiente;
 
+	on = 1;
+	
 	//printf("Hex %02x\n", 255);
-	do {
+	while(on) {
 		printf("\nIntroduce la operacion en forma [operacion operando1 operando2] :  \n");
-		fflush(stdout);
+		//fflush(stdout);
+		//fflush(stdin);
 		/* get string */
 		if(fgets(buffer, sizeof(buffer), stdin) == NULL){
 			printf("Error de lectura. Se admite la expresion entre 1 y 256 caracteres.\n");
@@ -47,7 +53,7 @@ int main(int argc, char **argv){
 				res = or_log(atoi(operand[1]), atoi(operand[2]));
 				//sprintf(operand[3], "%u", res);
 			} else {
-				printf("Before calling format b = %u\n", format_code);
+				//printf("Before calling format b = %u\n", format_code);
 				strcpy(op1, format_change(operand[1], format_code, 10));
 				strcpy(op2, format_change(operand[2], format_code, 10));
 				res = or_log(atoi(op1), atoi(op2));
@@ -114,7 +120,7 @@ int main(int argc, char **argv){
 			res = atoi(operand[1]);
 			if(res == 2 || res == 10 || res == 16){
 				printf("Ha cambiado la base de %d a %s.\n", format_code, operand[1]);
-				format_code = atoi(operand[1]);
+				format_code = res;
 			} else {
 				printf("La base no soportada. Introduce 2, 10 o 16.\n");
 			}
@@ -129,10 +135,12 @@ int main(int argc, char **argv){
 		} else if(!strcmp(operand[0],"show\n")){
 			printf("Mostrar la memoria.\n");
 			show_mem(&mem);
+		} else if(!strcmp(operand[0],"salir\n")){
+			on = 0;
 		}
 		fflush(stdout);
 		/* memory management */
-		if(memory_on && strcmp(operand[0],"show\n")){
+		if(memory_on && strcmp(operand[0],"show\n") && strcmp(operand[0],"memory")){
 			if(format_code == 10){
 				char unsigned op1 = atoi(operand[1]);
 				char unsigned op2 = atoi(operand[2]);
@@ -172,11 +180,12 @@ int main(int argc, char **argv){
 
 			ptr_mem = ptr_mem -> siguiente;
 			*/
-			printf("Se ha guardado la opercaion\n");
+			printf("Se ha guardado la operacion\n");
 		}
 		fflush(stdout);
 		elem = 0;
-	} while(1);
+	}
+	printf("ADIOS...\n");
 
 	return 0;
 }
