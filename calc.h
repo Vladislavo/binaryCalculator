@@ -47,4 +47,7 @@ void delete_mem(node *n);
 /* Mostrar el contenido de la memoria */
 void show_mem(node **n);
 
+/* welcome funcion */
+void welcome();
+
 #endif

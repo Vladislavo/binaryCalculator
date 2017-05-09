@@ -64,7 +64,7 @@ char * format_change(char* num, char from_base, char to_base){
 				aux += (num[cnt] - '0')*pow(2, strlen(num)-cnt-1);
 				cnt++;
 			}
-			printf("%u\n", aux);
+			//printf("%u\n", aux);
 			sprintf(res, "%u", aux);
 		} else if(to_base == 16){
 			while(num[cnt] != '\0'){
@@ -102,7 +102,6 @@ char * format_change(char* num, char from_base, char to_base){
 }
 
 void fill_mem(char *opt, char *op1, char *op2, char *res, node **memoria, char format_code){
-	printf("FILLMEM IN\n");
 	node *mem = *memoria;
 	if(!strcmp(opt, "base")){
 		strcpy(mem -> contenido.operacion, opt);
@@ -114,57 +113,48 @@ void fill_mem(char *opt, char *op1, char *op2, char *res, node **memoria, char f
 		*memoria = mem;
 	} else {
 		if(format_code == 10){
+			/* first operand */
 			mem -> contenido.dato = *op1;
-
 			mem -> siguiente = alloc_mem();
+
+			/* operation */
 			mem = mem -> siguiente;
 			strcpy(mem -> contenido.operacion, opt);
 			mem -> siguiente = alloc_mem();
 
+			/* second operand */
 			mem = mem -> siguiente;
 			mem -> contenido.dato = *op2;
 			mem -> siguiente = alloc_mem();
 
-			//mem = mem -> siguiente;
-			//strcpy(mem -> contenido.operacion, "=>");
-			//mem -> siguiente = alloc_mem();
-
+			/* result */
 			mem = mem -> siguiente;
 			mem -> contenido.dato = *res;
 			mem -> siguiente = alloc_mem();
-
-			//mem = mem -> siguiente;
-			//strcpy(mem -> contenido.operacion, "|~|");
-			//mem -> siguiente = alloc_mem();
-
-			mem = mem -> siguiente;
 		} else {
+			/* first operand */
 			strcpy(mem -> contenido.operacion, op1);
-
 			mem -> siguiente = alloc_mem();
+
+			/* operation */
 			mem = mem -> siguiente;
 			strcpy(mem -> contenido.operacion, opt);
 			mem -> siguiente = alloc_mem();
 
+			/* second operand */
 			mem = mem -> siguiente;
 			strcpy(mem -> contenido.operacion, op2);
 			mem -> siguiente = alloc_mem();
 
-			//mem = mem -> siguiente;
-			//strcpy(mem -> contenido.operacion, "=>");
-			//mem -> siguiente = alloc_mem();
-
+			/* result */
 			mem = mem -> siguiente;
 			strcpy(mem -> contenido.operacion, res);
 			mem -> siguiente = alloc_mem();
-
-			//mem = mem -> siguiente;
-			//strcpy(mem -> contenido.operacion, "|~|");
-			//mem -> siguiente = alloc_mem();
-
-			mem = mem -> siguiente;
-			*memoria = mem;
 		}
+		/* keep pointer on the next node */
+		mem = mem -> siguiente;
+		/* update current mem position */
+		*memoria = mem;
 	}
 }
 
@@ -195,15 +185,40 @@ void show_mem(node **n){
 			ptr = (ptr -> siguiente) -> siguiente;
 		} else {
 			if(base == 10){
-				printf("%u %s %u => %u |~| ", (ptr -> siguiente) -> contenido.dato, 
-					ptr -> contenido.operacion, ((ptr -> siguiente) -> siguiente) -> contenido.dato,
+				printf("%u %s %u => %u |~| ", ptr -> contenido.dato, 
+					(ptr -> siguiente) -> contenido.operacion, ((ptr -> siguiente) -> siguiente) -> contenido.dato,
 					(((ptr -> siguiente) -> siguiente) -> siguiente) -> contenido.dato);
 			} else {
-				printf("%s %s %s => %s |~| ", (ptr -> siguiente) -> contenido.operacion, 
-					ptr -> contenido.operacion, ((ptr -> siguiente) -> siguiente) -> contenido.operacion,
+				printf("%s %s %s => %s |~| ", ptr -> contenido.operacion, 
+					(ptr -> siguiente) -> contenido.operacion, ((ptr -> siguiente) -> siguiente) -> contenido.operacion,
 					(((ptr -> siguiente) -> siguiente) -> siguiente) -> contenido.operacion);
 			}
 			ptr = (((ptr -> siguiente) -> siguiente) -> siguiente) -> siguiente;
 		}
 	}
+	printf("\n");
+}
+
+void welcome(){
+	printf("----------------------------------------------------------\n");
+	printf("   Operaciones disponibles en la calculadora :            \n");
+	printf("    													  \n");
+	printf("     . OR   		el OR logico						  \n");
+	printf("     . AND  		el AND logico						  \n");
+	printf("     . XOR  		el XOR logico					 	  \n");
+	printf("     . <<   		desplazamiento a la izqierda 		  \n");
+	printf("     . >>   		desplazamiento a la derecha			  \n");
+	printf("     . base 		cambio de base numerica 			  \n");
+	printf("     . memory 		gestion de la memoria				  \n");
+	printf("     . show 		mostrar el contenido de la memoria	  \n");
+	printf("     . exit 		salir de la calculadora				  \n");
+	printf("														  \n");
+	printf("  * Las operaciones se puede itroducir en minusculas      \n");
+	printf("		tal como en mayusculas.							  \n");
+	printf("														  \n");
+	printf("    Introduce la operacion en siguiente forma:			  \n");
+	printf("			> operacion operando1 operando2				  \n");
+	printf(" 		ej. > or 100 001								  \n");
+	printf(" 		ej. > << 1 5								  	  \n");
+	printf("----------------------------------------------------------\n");
 }
