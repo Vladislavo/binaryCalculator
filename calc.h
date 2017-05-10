@@ -1,6 +1,7 @@
 /* Funciones matematicas para la calculadora binaria */
 #ifndef __CALC_H__
 #define __CALC_H__
+
 /* lista dinamica para manejar la memoria */
 typedef struct node {
 	union { 
@@ -10,9 +11,7 @@ typedef struct node {
 	struct node * siguiente;
 } node;
 
-/* Cadenas para la representacion */
-//const char** oper_str = {"OR", "AND", "XOR", "SHLL", "SHRL"};
-//const char** format_str = {"Binario", "Hexadecimal", "Decimal"};
+/* Funciones de la calculadora: */
 
 /* OR logico */
 char or_log(char op1, char op2);

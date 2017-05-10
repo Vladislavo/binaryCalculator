@@ -2,10 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+
 #ifndef __CALC_H__
 #include "calc.h"
 #endif
 
+/* Las operaciones logicas */
 char or_log(char op1, char op2){
 	return (op1 | op2);
 }
@@ -28,14 +30,18 @@ char shr_log(char op, char num){
 
 /* Cambio de formato (2 binario, 16 hexadecimal, 10 decimal). */
 char * format_change(char* num, char from_base, char to_base){
-	//printf("Come in %s\n", num);
+	/* Allocamos una string en la memoria dinamica */
 	char *res = (char *)malloc(sizeof(char)*10);
+	/* la inicializamos a "" */
 	strcpy(res, "");
-	char cnt = 0, rem;// aux = 0;
+	/* variables auxiliares */
+	char cnt = 0;
 	unsigned aux = 0;
 	unsigned char var;
 
-	//printf("from b = %u\n", from_base);
+	/* rutinas de cambio de base. Cada una esta implementada de su forma peculiar,
+	 * con el objetivo de ahorrar el espacio. (muchas veces utilizando la tabla ASSCI)
+	 */
 	if(from_base == 10){
 		var = atoi(num);
 		cnt = log(var)/log(to_base); /* needed to get not inversed version of a binary number (eg 100 instead of 001)*/
@@ -52,19 +58,10 @@ char * format_change(char* num, char from_base, char to_base){
 		}
 	} else if (from_base == 2){
 		if(to_base == 10){
-			/*var = atoi(num);
-			printf("var = %d\n", var);
-			while(var != 0){
-				rem = var % 10;
-				aux += rem*pow(2,cnt);
-				cnt++;
-				var = var / 10;
-			}*/
 			while(num[cnt] != '\0'){
 				aux += (num[cnt] - '0')*pow(2, strlen(num)-cnt-1);
 				cnt++;
 			}
-			//printf("%u\n", aux);
 			sprintf(res, "%u", aux);
 		} else if(to_base == 16){
 			while(num[cnt] != '\0'){
@@ -97,13 +94,16 @@ char * format_change(char* num, char from_base, char to_base){
 		}
 	} else 
 		perror("Wrong format base.");
-		//printf("Come out %s\n", res);
 	return res;
 }
 
+/* La funcion de llenar la memoria con la operacion entera */ 
 void fill_mem(char *opt, char *op1, char *op2, char *res, node **memoria, char format_code){
 	node *mem = *memoria;
 	if(!strcmp(opt, "base")){
+		/* Si la operacion es un cambio de base, se llena de su forma. Lo mismo pasa para
+		 * la base decimal y el resto de bases.
+		 */
 		strcpy(mem -> contenido.operacion, opt);
 		mem -> siguiente = alloc_mem();
 		mem = mem -> siguiente;
@@ -158,14 +158,15 @@ void fill_mem(char *opt, char *op1, char *op2, char *res, node **memoria, char f
 	}
 }
 
+/* Allocar la memoria de un nodo */
 node * alloc_mem(){
 	return (node *)malloc(sizeof(node));
 }
-
+/* Liberar la memoria de un nodo */
 void dealloc_mem(node *n){
 	free(n);
 }
-
+/* Limpiar toda la memoria */
 void delete_mem(node *n){
 	node *ptr = n;
 	while(ptr != NULL){
@@ -174,9 +175,14 @@ void delete_mem(node *n){
 	}
 }
 
+/* Mostrar la memoria */
 void show_mem(node **n){
 	node *ptr = *n;
 	char base;
+	/* Hay su forma de representacion para cambios de base y operaciones logicas.
+	 * Cambios de base marcan nueva linea en la impresion de la memoria de tal modo
+	 * manteniendo la claridad de las operaciones.
+	 */
 	printf("Contenido de la memoria: |~| ");
 	while(ptr -> siguiente != NULL){
 		if(!strcmp(ptr -> contenido.operacion, "base")){
@@ -184,6 +190,7 @@ void show_mem(node **n){
 			printf("%s %u \n|~| ", ptr -> contenido.operacion, base);
 			ptr = (ptr -> siguiente) -> siguiente;
 		} else {
+			/* Juego de punteros en cada caso */
 			if(base == 10){
 				printf("%u %s %u => %u |~| ", ptr -> contenido.dato, 
 					(ptr -> siguiente) -> contenido.operacion, ((ptr -> siguiente) -> siguiente) -> contenido.dato,
@@ -199,6 +206,7 @@ void show_mem(node **n){
 	printf("\n");
 }
 
+/* La funcion informativa de bienvenida */
 void welcome(){
 	printf("----------------------------------------------------------\n");
 	printf("   Operaciones disponibles en la calculadora :            \n");
